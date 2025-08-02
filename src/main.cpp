@@ -37,6 +37,8 @@ float xPosition;
 float mode;
 long startTime;
 float motorVoltage;
+uint64_t cycle = 0;
+uint64_t pktsReceived = 0;
 
 enum GEAR_STATE {
   GEAR_STATE_REVERSE = -1,
@@ -146,14 +148,13 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
 
   memcpy(&incomingMessage, incomingData, sizeof(incomingMessage));
 
-  Serial.println("Incoming message:");
-  dumpState(&incomingMessage);
-
   // Update the structures with the new incoming data
   foreBoard.steer = incomingMessage.steer;
   foreBoard.throttle = incomingMessage.throttle;
   foreBoard.gear = incomingMessage.gear;
   foreBoard.bilge = incomingMessage.bilge;
+
+  pktsReceived++;
 }
 
 void setup()
@@ -205,6 +206,12 @@ void setup()
 // This loop runs continuously
 void loop()
 {
+  if (cycle++ % 100 == 0) {
+    dumpState(&foreBoard);
+    Serial.printf("Packets received in last period: %lld\n", pktsReceived);
+    pktsReceived = 0;
+  }
+
   // If the gear selected on the control panel is different from the currently selected gear
   if (foreBoard.gear != safeGearState)
   {
@@ -219,12 +226,10 @@ void loop()
 
   if (foreBoard.bilge == 1)
   {
-    delay(1000);
     digitalWrite(BilgeRelay_PIN, HIGH);
   } 
   else if (foreBoard.bilge == 0)
   {
-    delay(1000);
     digitalWrite(BilgeRelay_PIN, LOW);
   }
 
