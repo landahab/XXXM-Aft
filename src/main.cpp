@@ -212,6 +212,7 @@ void loop()
     if (foreBoard.gear == 0 || foreBoard.throttle <= MaxGearChangeThrottle)
     {
       // It's safe, let's change it
+      Serial.printf("Changing gear from %d to %d\n", safeGearState, foreBoard.gear);
       safeGearState = foreBoard.gear;
     }
   }
