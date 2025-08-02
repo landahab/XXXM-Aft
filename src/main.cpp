@@ -142,7 +142,7 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
   char macStr[18];
   snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.printf("Received message from %s\n", macStr);
+  // Serial.printf("Received message from %s\n", macStr);
 
   memcpy(&incomingMessage, incomingData, sizeof(incomingMessage));
 
@@ -154,9 +154,6 @@ void OnDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len)
   foreBoard.throttle = incomingMessage.throttle;
   foreBoard.gear = incomingMessage.gear;
   foreBoard.bilge = incomingMessage.bilge;
-
-  Serial.println("Resulting state:");
-  dumpState(&foreBoard);
 }
 
 void setup()
@@ -208,8 +205,6 @@ void setup()
 // This loop runs continuously
 void loop()
 {
-  dumpState(&foreBoard);
-
   // If the gear selected on the control panel is different from the currently selected gear
   if (foreBoard.gear != safeGearState)
   {
